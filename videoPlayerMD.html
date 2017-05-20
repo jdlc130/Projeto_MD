@@ -1,54 +1,63 @@
 <!DOCTYPE html>
 <html>
-<body>
 <head>
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
+<header> <h1> Multimedia Reader  </h1> </header>  
+
+<body>
+	<div class="content">
+		<div id="parent_div_1">
+		  <video id="video1" width="480" height="360">
+			<source src="movie.mp4"type="video/mp4">
+			Your browser does not support HTML5 video.
+		  </video>
+		  <canvas id="myCanvas"  width="480" height="360">
+			Your browser does not support the HTML5 canvas tag.
+		   </canvas>
+			<p id="time"></p>
+		</div>
+		
+		<div class="child_div_1">
+			<p> Menu Controlls</p>
 
 
+		<div class="sliders yui3-skin-sam">
+			<dl>
+				<dt>R: <span id="r-val" class="val"></span></dt><dd id="r-slider"></dd>
+				<dt>G: <span id="g-val" class="val"></span></dt><dd id="g-slider"></dd>
+				<dt>B: <span id="b-val" class="val"></span></dt><dd id="b-slider"></dd>
+			</dl>
+		</div>
 
 
-<div style="text-align:center">
-  <br><br>
-  <video id="video1" width="320" height="180">
-    <source src="movie.mp4"type="video/mp4">
-    Your browser does not support HTML5 video.
-  </video>
-  <canvas id="myCanvas"  width="360" height="240" style="border:1px solid #c3c3c3;">
-	Your browser does not support the HTML5 canvas tag.
-   </canvas>
-    <p id="time"></p>
-</div>
+		<div class="color"></div>
+			<div class="output">
+				<dl>
+					<dt>Hex:</dt><dd id="hex"></dd>
+					<dt>RGB:</dt><dd id="rgb"></dd>
+					<dt>HSL:</dt><dd id="hsl"></dd>
+				</dl>
+			</div>
+		</div>
 
 
-
-
-<div class="sliders yui3-skin-sam">
-    <dl>
-        <dt>R: <span id="r-val" class="val"></span></dt><dd id="r-slider"></dd>
-        <dt>G: <span id="g-val" class="val"></span></dt><dd id="g-slider"></dd>
-        <dt>B: <span id="b-val" class="val"></span></dt><dd id="b-slider"></dd>
-    </dl>
-</div>
-
-
-<div class="color"></div>
-<div class="output">
-    <dl>
-        <dt>Hex:</dt><dd id="hex"></dd>
-        <dt>RGB:</dt><dd id="rgb"></dd>
-        <dt>HSL:</dt><dd id="hsl"></dd>
-    </dl>
-</div>
-
+		<div class="frame_control" >
+			<canvas id="frame" >
+			</canvas>
+		</div>
+	</div>
+	<footer class="footer">
+	<p> Trabalho de Multimedia, Jorge e Leonel </p>
+	</footer>
+</body>
 
 <script>
-
 var myVideo = document.getElementById("video1");
-var c = document.getElementById("myCanvas");
+var c = document.getElementById("frame");
 var n = 6;  //divide o vídeo em 5 segmentos de igual diuração
 c.width = (myVideo.width+10)*n; //dimensões do canvas tem includir 5 frames com metade das dimensões do vídeo
-c.height = myVideo.height;
+c.height = myVideo.height/2;
 
 var interval = 0; //duração dos clips
 
@@ -172,5 +181,4 @@ c.addEventListener('mousedown', function(event) {
 
     });
 </script>
-</body>
 </html>

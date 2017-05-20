@@ -2,10 +2,10 @@
  * Created by jorgeduarte on 20/05/17.
  */
 var myVideo = document.getElementById("video1");
-var c = document.getElementById("myCanvas");
+var c = document.getElementById("frame");
 var n = 6;  //divide o vídeo em 5 segmentos de igual diuração
 c.width = (myVideo.width+10)*n; //dimensões do canvas tem includir 5 frames com metade das dimensões do vídeo
-c.height = myVideo.height;
+c.height = myVideo.height/2;
 
 var interval = 0; //duração dos clips
 

@@ -62,3 +62,51 @@ label[for=b], output[for=b]{
     line-height: 40px;
     margin: 0;
 }
+
+
+
+
+#parent_div_1, #parent_div_2, #parent_div_3 {
+    width: 480px;
+    height: 360px;
+    border: 1px solid red;
+    margin-right: 10px;
+    margin-left: 10px;
+    float: left;
+}
+.child_div_1 {
+    float: left;
+    border: 1px solid green;
+    margin-right: 5px;
+}
+
+.frame_control {
+    border: 1px solid blue;
+    width:98%;
+    height: 10%;
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
+    float: left;
+    overflow-x: auto;
+
+}
+
+
+
+
+html {
+    height: 100%;
+    background-color:#deeaee;
+}
+body {
+    min-height: 100%;
+    background-color:white;
+}
+.content {
+    min-height: calc(100vh - 70px);
+}
+
+.footer {
+    height: 50px;
+}

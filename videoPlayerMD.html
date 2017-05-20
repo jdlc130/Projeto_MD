@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<body>
+<head>
+    <link rel="stylesheet" type="text/css" href="styles.css.css">
+</head>
+
+
+<div style="text-align:center">
+  <br><br>
+  <video id="video1"  width="320" height="180" >
+    <source src="movie.mp4"type="video/mp4">
+    Your browser does not support HTML5 video.
+  </video>
+  <canvas id="myCanvas"  width="990" height="180" style="border:1px solid #c3c3c3;">
+	Your browser does not support the HTML5 canvas tag.
+   </canvas>
+   <p id="time"></p>
+</div>
+
+<div class="sliders yui3-skin-sam">
+    <dl>
+        <dt>R: <span id="r-val" class="val"></span></dt><dd id="r-slider"></dd>
+        <dt>G: <span id="g-val" class="val"></span></dt><dd id="g-slider"></dd>
+        <dt>B: <span id="b-val" class="val"></span></dt><dd id="b-slider"></dd>
+    </dl>
+</div>
+<div class="color"></div>
+<div class="output">
+    <dl>
+        <dt>Hex:</dt><dd id="hex"></dd>
+        <dt>RGB:</dt><dd id="rgb"></dd>
+        <dt>HSL:</dt><dd id="hsl"></dd>
+    </dl>
+</div>
+
+
+<script>
+
+var myVideo = document.getElementById("video1");
+var c = document.getElementById("myCanvas");
+var n = 6;  //divide o vídeo em 5 segmentos de igual diuração
+c.width = (myVideo.width+10)*n; //dimensões do canvas tem includir 5 frames com metade das dimensões do vídeo
+c.height = myVideo.height;
+
+var interval = 0; //duração dos clips
+
+var ctx = c.getContext("2d");
+
+var i = 0; //controlo do número de frame a obter < n
+
+var canPlay = false;
+
+var setInt;
+
+//assim que o vídeo fôr carregado, calcula o intervalo e obtém os frames
+myVideo.oncanplay = function() {
+		interval = Math.round(myVideo.duration/n);
+    if(!canPlay)
+    {
+        setInt = setInterval(seekVideo, 100);  //chama seekvideo pretendida a cada 100ms
+        canPlay = true; //be bure that setInterval is called only once
+    }
+};
+
+//coloca o vídeo na posição temporal pretendida, se i >= n para
+function seekVideo(){
+  if(i < n)
+    myVideo.currentTime = interval*i;
+  else
+    clearInterval(setInt);
+}
+
+//cada vez que existe alteracao temporal desenha um frame no canvas, caso i >= n para
+myVideo.ontimeupdate = function() {
+  if(i < n)
+  {
+    ctx.drawImage(myVideo,((320+10)*(i)),0,320,180);
+    i++;
+  }
+};
+
+
+//canvas deteta eventos quando o rato é presionado. Consoante o frame escolhido pelo utilizador, coloca o vídeo na posição temporal correspondente.
+c.addEventListener('mousedown', function(event) {
+	var x = event.clientX; //obtém a coordenada x relativamente à margem do documento.
+
+	x -= c.getBoundingClientRect().left; //subtrai a distância entre o x canvas e margem do document -> canto esquerdo do canvas fica posição 0
+
+	var frameindex = Math.floor(x/(320+10)); //calcula a que segmento pertence o frame
+
+	myVideo.currentTime = interval*frameindex; //coloca o vídeo na posição temporal do segmento
+
+	//document.getElementById('time').innerHTML = interval*frameindex;
+
+ }, false);
+
+
+
+
+</script>
+
+//
+<script>
+    YUI().use('slider', 'color', function(Y){
+        // sliders
+        var rSlider = new Y.Slider({ min: 0, max: 255, value: Math.round(Math.random()*255) }),
+            gSlider = new Y.Slider({ min: 0, max: 255, value: Math.round(Math.random()*255) }),
+            bSlider = new Y.Slider({ min: 0, max: 255, value: Math.round(Math.random()*255) }),
+
+            // slider values
+            rVal = Y.one('#r-val'),
+            gVal = Y.one('#g-val'),
+            bVal = Y.one('#b-val'),
+
+            // color strings
+            hex = Y.one('#hex'),
+            rgb = Y.one('#rgb'),
+            hsl = Y.one('#hsl'),
+
+            // color chip
+            color = Y.one('.color');
+
+        // render sliders
+        rSlider.render('#r-slider');
+        gSlider.render('#g-slider');
+        bSlider.render('#b-slider');
+
+
+        // register update events
+        rSlider.after('thumbMove', function(e) {
+            rVal.set('text', rSlider.get('value'));
+            updateColors();
+        });
+        gSlider.after('thumbMove', function(e) {
+            gVal.set('text', gSlider.get('value'));
+            updateColors();
+        });
+        bSlider.after('thumbMove', function(e) {
+            bVal.set('text', bSlider.get('value'));
+            updateColors();
+        });
+
+        // update the colors strings
+        function updateColors() {
+            var r = rSlider.get('value'),
+                g = gSlider.get('value'),
+                b = bSlider.get('value'),
+                rgbStr = Y.Color.fromArray([r,g,b], Y.Color.TYPES.RGB);
+
+            color.setStyle('backgroundColor', rgbStr);
+
+            rgb.set('text', rgbStr);
+
+            hex.set('text', Y.Color.toHex(rgbStr));
+            hsl.set('text', Y.Color.toHSL(rgbStr));
+        }
+
+
+
+        rVal.set('text', rSlider.get('value'));
+        gVal.set('text', gSlider.get('value'));
+        bVal.set('text', bSlider.get('value'));
+        updateColors();
+
+    });
+</script>
+</body>
+</html>

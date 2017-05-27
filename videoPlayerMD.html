@@ -9,23 +9,28 @@
 <div class="content">
     <div id="parent_div_1">
 
-        <video id="video1" width="480" height="360">
-            <source src="movie.mp4"type="video/mp4">
-            Your browser does not support HTML5 video.
+    
+        <video id="video1" width="480" height="360" controls>
+                    <source src="movie.mp4" type="video/mp4" c>
+                    <br>
         </video>
-        <br>
-        <button onclick="playPause()">Play/Pause</button>
+        </div>
+
+    <div id="parent_div_2">
+        <canvas id="myCanvas" width="480" height="360">
+
+        </canvas>
+         <button onclick="playPause()">Play/Pause</button>
         <button onclick="makeBig()">Big</button>
         <button onclick="makeSmall()">Small</button>
         <button onclick="makeNormal()">Normal</button>
 
-        <canvas id="myCanvas"  width="480" height="360">
-            Your browser does not support the HTML5 canvas tag.
-        </canvas>
-        <p id="time"></p>
-
 
     </div>
+       <p id="time"></p>
+      
+
+   
 
     <div class="child_div_1">
         <p> Menu Controlls</p>
@@ -54,6 +59,16 @@
 
     </div>
 
+     <div class="child_div_1">
+        <div id="filters">
+        <p> Filters</p>
+        <br>
+        <button id="grayScale" value="grayScale">GrayScale</button>
+        <button id="noise"     value="noise"> Noise </button>
+        </div>
+
+    </div>
+
 
     <div class="frame_control" >
         <canvas id="frame" >
@@ -67,7 +82,7 @@
 
 <script src="functionsVideoPlayer.js"></script>
 <script src="functJorge.js"></script>
-
+<script src="functLeonel.js"></script> 
 <script src="funtionsFramesVideo.js"></script>
 
 </html>

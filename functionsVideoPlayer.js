@@ -1,8 +1,12 @@
 var myVideo = document.getElementById("video1");
+var canvas = document.getElementById("myCanvas");
+var canvasctx= canvas.getContext('2d');
+var divHide = document.getElementById('parent_div_1');
 
 function playPause() {
-    if (myVideo.paused)
+    if (myVideo.paused){
         myVideo.play();
+    }
     else
         myVideo.pause();
 }

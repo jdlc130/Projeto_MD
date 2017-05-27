@@ -2,6 +2,10 @@
  * Created by jorgeduarte on 20/05/17.
  */
 var myVideo = document.getElementById("video1");
+var canvas = document.getElementById("myCanvas");
+var canvasctx= canvas.getContext('2d');
+var divHide = document.getElementById('parent_div_1');
+
 var c = document.getElementById("frame");
 var n = 6;  //divide o vídeo em 5 segmentos de igual diuração
 c.width = (myVideo.width+10)*n; //dimensões do canvas tem includir 5 frames com metade das dimensões do vídeo
@@ -17,8 +21,16 @@ var canPlay = false;
 
 var setInt;
 
+var activeFilter ='default';
+
+document.getElementById('filters').addEventListener('click', function(e) {
+        var value = e.target.value;
+        activeFilter = value ? value : activeFilter;
+}, false);
+
 //assim que o vídeo fôr carregado, calcula o intervalo e obtém os frames
 myVideo.oncanplay = function() {
+    divHide.style.display='none';
     interval = Math.round(myVideo.duration/n);
     if(!canPlay)
     {
@@ -26,6 +38,7 @@ myVideo.oncanplay = function() {
         canPlay = true; //be bure that setInterval is called only once
     }
 };
+
 
 //coloca o vídeo na posição temporal pretendida, se i >= n para
 function seekVideo(){
@@ -58,3 +71,65 @@ c.addEventListener('mousedown', function(event) {
     //document.getElementById('time').innerHTML = interval*frameindex;
 
 }, false);
+
+myVideo.addEventListener('play', function () {
+    var $this = this; //cache
+    (function loop() {
+        if (!$this.paused && !$this.ended) {        
+            canvasctx.drawImage(myVideo, 0, 0,480,360);
+            setTimeout(loop, 1000 / 30); // drawing at 30fps
+            switch(activeFilter)
+            {
+                case 'grayScale':
+                grayScale();
+                break;
+                case 'noise':
+                noise();
+                break;
+
+
+            }
+        }
+    })();
+}, 0);
+
+
+
+function grayScale()
+{
+var myFrame =canvasctx.getImageData(0,0,480,360); //obtem os pixels do frame escolhido
+var frameData= myFrame.data;
+
+  for(var i=0; i<frameData.length; i+=4)
+  {
+    var avg=(frameData[i]+frameData[i+1]+frameData[i+2])/3; //avg para aplicar a todos as cores 
+    frameData[i] = avg;
+    frameData[i+1] =avg;
+    frameData[i+2] =avg;
+}
+
+canvasctx.putImageData(myFrame,0,0);
+}
+
+function noise()
+{
+var myFrame =canvasctx.getImageData(0,0,480,360); //obtem os pixels do frame escolhido
+var frameData= myFrame.data;
+
+  for(var i=0; i<frameData.length; i+=4)
+  {
+   var rand = (0.5 - Math.random()) * 70; //UM VALOR RANDOM 
+
+   var r =  frameData[i];
+   var g =  frameData[i+1];
+   var b = frameData[i+2];
+
+   frameData[i] = r+ rand;
+   frameData[i+1]= g+rand;
+   frameData[i+2]= b+rand;
+
+}
+
+canvasctx.putImageData(myFrame,0,0);
+}
+

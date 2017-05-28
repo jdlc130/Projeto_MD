@@ -7,8 +7,8 @@ var canvasctx= canvas.getContext('2d');
 var divHide = document.getElementById('parent_div_1');
 
 var c = document.getElementById("frame");
-var n = 6;  //divide o vídeo em 5 segmentos de igual diuração
-c.width = (myVideo.width+10)*n; //dimensões do canvas tem includir 5 frames com metade das dimensões do vídeo
+var n =30;  //divide o vídeo em 5 segmentos de igual diuração
+c.width = (myVideo.width+10)*30; //dimensões do canvas tem includir 5 frames com metade das dimensões do vídeo
 c.height = myVideo.height/2;
 
 var interval = 0; //duração dos clips
@@ -17,30 +17,33 @@ var ctx = c.getContext("2d");
 
 var i = 0; //controlo do número de frame a obter < n
 
+var number = 0;
+
 var canPlay = false;
 
 var setInt;
 
 var activeFilter ='default'; //definir qual o filtro
 var filterSize = 3; //tamanho do filtro 3x3
-var filterSharp = [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]; //filtro  Shar 
-var filterBlur = [[1/9,1/9,1/9],[1/9,1/9,1/9],[1/9,1/9,1/9]]; //filtro  blur 
-var filterSobel =  [[1,2,1],[0,0,0],[-1,-2,-1]];  //filtro Sobel 
-var filterSobel2 =  [[1,0,-1],[2,0,-2],[1,0,-1]]; 
+var filterSharp = [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]; //filtro  Shar
+var filterBlur = [[1/9,1/9,1/9],[1/9,1/9,1/9],[1/9,1/9,1/9]]; //filtro  blur
+var filterSobel =  [[1,2,1],[0,0,0],[-1,-2,-1]];  //filtro Sobel
+var filterSobel2 =  [[1,0,-1],[2,0,-2],[1,0,-1]];
 var filterEdge =  [[0,1,0],[1,-4,1],[0,1,0]];   //filtro das bordas
 
+var time = [];
 
 
 document.getElementById('filters').addEventListener('click', function(e) //selecionar controles dos filtros
-{ 
-        var value = e.target.value;
-        activeFilter = value ? value : activeFilter;
+{
+    var value = e.target.value;
+    activeFilter = value ? value : activeFilter;
 }, false);
 
 //assim que o vídeo fôr carregado, calcula o intervalo e obtém os frames
 myVideo.oncanplay = function() {
     divHide.style.display='none';
-    interval = Math.round(myVideo.duration/n);
+    interval = Math.round(myVideo.duration);
     if(!canPlay)
     {
         setInt = setInterval(seekVideo, 100);  //chama seekvideo pretendida a cada 100ms
@@ -59,12 +62,23 @@ function seekVideo(){
 
 //cada vez que existe alteracao frameDataoral desenha um frame no canvas, caso i >= n para
 myVideo.ontimeupdate = function() {
+    copyPlayer1(0);
     if(i < n)
     {
-        ctx.drawImage(myVideo,((320+10)*(i)),0,320,180);
+
+        // ctx.drawImage(myVideo,((320+10)*(i)),0,320,180);
         i++;
     }
+
 };
+
+
+function copyFrame() {
+    number++;
+        time[number] = myVideo.currentTime;
+        ctx.drawImage(myVideo,((320+10)*(number)),0,320,180);
+
+}
 
 //canvas deteta eventos quando o rato é presionado. Consoante o frame escolhido pelo utilizador, coloca o vídeo na posição frameDataoral correspondente.
 c.addEventListener('mousedown', function(event) {
@@ -74,44 +88,59 @@ c.addEventListener('mousedown', function(event) {
 
     var frameindex = Math.floor(x/(320+10)); //calcula a que segmento pertence o frame
 
-    myVideo.currentTime = interval*frameindex; //coloca o vídeo na posição frameDataoral do segmento
+    var tdate = document.getElementById('txtDate');
+
+    tdate.value = time[frameindex];
+
+    myVideo.currentTime = time[frameindex]-0.1;
+    //myVideo.currentTime = time[frameindex]; //coloca o vídeo na posição frameDataoral do segmento
 
     //document.getElementById('time').innerHTML = interval*frameindex;
 
 }, false);
 
 myVideo.addEventListener('play', function ()    //sempre que o video se encontra a ser reproduzido
-{  
+{
     var $this = this; //cache
     (function loop() {
-        if (!$this.paused && !$this.ended) {        
+        if (!$this.paused && !$this.ended) {
             canvasctx.drawImage(myVideo, 0, 0,480,360);
             setTimeout(loop, 1000 / 30); // drawing at 30fps
-            switch(activeFilter)                                       
+            switch(activeFilter)
             {
                 case 'grayScale':
-                grayScale();
-                break;
+                    grayScale();
+                    break;
                 case 'noise':
-                noise();
-                break;
+                    noise();
+                    break;
                 case 'sharpen':
-                applyFilter(filterSize,filterSharp);
-                break;
+                    applyFilter(filterSize,filterSharp);
+                    break;
                 case 'blur':
-                applyFilter(filterSize,filterBlur);
-                break;
+                    applyFilter(filterSize,filterBlur);
+                    break;
                 case 'edge':
-                grayScale();
-                applyFilter(filterSize,filterEdge);
-                break;
+                    grayScale();
+                    applyFilter(filterSize,filterEdge);
+                    break;
                 case 'sobel':
-                grayScale();
-                applyFilter(filterSize.filterSobel2);
-                applyFilter(filterSize.filterSobel);
-                break;
+                    grayScale();
+                    applyFilter(filterSize.filterSobel2);
+                    applyFilter(filterSize.filterSobel);
+                    break;
+                case 'black':
+                    black_white();
+                    break;
+                case 'colorButton':
+                    color();
+                    break;
+                case 'addObect':
+                    addObect();
+                    break;
+
                 default:
-                break;
+                    break;
 
             }
         }
@@ -122,87 +151,87 @@ myVideo.addEventListener('play', function ()    //sempre que o video se encontra
 
 function grayScale()        //filtro cinza
 {
-var myFrame =canvasctx.getImageData(0,0,480,360); //obtem os pixels do frame escolhido
-var frameData= myFrame.data;
-  for(var i=0; i<frameData.length; i+=4)
-  {
-    var avg=(frameData[i]+frameData[i+1]+frameData[i+2])/3; //avg para aplicar a todos as cores 
-    frameData[i] = avg;
-    frameData[i+1] =avg;
-    frameData[i+2] =avg;
-}
+    var myFrame =canvasctx.getImageData(0,0,480,360); //obtem os pixels do frame escolhido
+    var frameData= myFrame.data;
+    for(var i=0; i<frameData.length; i+=4)
+    {
+        var avg=(frameData[i]+frameData[i+1]+frameData[i+2])/3; //avg para aplicar a todos as cores
+        frameData[i] = avg;
+        frameData[i+1] =avg;
+        frameData[i+2] =avg;
+    }
 
-canvasctx.putImageData(myFrame,0,0);
+    canvasctx.putImageData(myFrame,0,0);
 }
 
 function noise()
 {
-var myFrame =canvasctx.getImageData(0,0,480,360); //obtem os pixels do frame escolhido
-var frameData= myFrame.data;
+    var myFrame =canvasctx.getImageData(0,0,480,360); //obtem os pixels do frame escolhido
+    var frameData= myFrame.data;
 
-  for(var i=0; i<frameData.length; i+=4)
-  {
-   var rand = (0.5 - Math.random()) * 70; //UM VALOR RANDOM 
+    for(var i=0; i<frameData.length; i+=4)
+    {
+        var rand = (0.5 - Math.random()) * 70; //UM VALOR RANDOM
 
-   var r =  frameData[i];
-   var g =  frameData[i+1];
-   var b = frameData[i+2];
+        var r =  frameData[i];
+        var g =  frameData[i+1];
+        var b = frameData[i+2];
 
-   frameData[i] = r+ rand;
-   frameData[i+1]= g+rand;
-   frameData[i+2]= b+rand;
+        frameData[i] = r+ rand;
+        frameData[i+1]= g+rand;
+        frameData[i+2]= b+rand;
 
+    }
+
+    canvasctx.putImageData(myFrame,0,0);
 }
 
-canvasctx.putImageData(myFrame,0,0);
-}
-
- var imageWidth=480;
- var imageHeight=360;
+var imageWidth=480;
+var imageHeight=360;
 
 
- //aplica o filtro num canal em particular
+//aplica o filtro num canal em particular
 function applyFilterbyChannel(col,row,channel,temp,filterSize,filter){
 
 
-  
-  var channelTotal = 0; //acumulador das somas
-  var coltrans = col-1; //inicia o ciclo na coluna da esq. da matrix 3x3
-  var rowtrans = row-1; //inicio o ciclio na linha de topo da matrix 3x3
 
-  for (var r = 0; r < filterSize; r++)
+    var channelTotal = 0; //acumulador das somas
+    var coltrans = col-1; //inicia o ciclo na coluna da esq. da matrix 3x3
+    var rowtrans = row-1; //inicio o ciclio na linha de topo da matrix 3x3
+
+    for (var r = 0; r < filterSize; r++)
     {
         for(var c = 0; c < filterSize; c++)
         {
-                channelTotal += temp[((coltrans+c)*4)+(imageWidth*4*(rowtrans+r))+channel]*filter[r][c]; //filter[r][c] acede ao valor do filtro de linha r e coluna c
+            channelTotal += temp[((coltrans+c)*4)+(imageWidth*4*(rowtrans+r))+channel]*filter[r][c]; //filter[r][c] acede ao valor do filtro de linha r e coluna c
 
         }
     }
 
-  var channelTop    = (temp[((col-1)*4)+(imageWidth*4*(row-1))+channel]*0) + (temp[(col*4)+(imageWidth*4*(row-1))+channel]*-1) + (temp[((col+1)*4)+(imageWidth*4*(row-1))+channel]*0);
-  var channelMiddle = (temp[((col-1)*4)+(imageWidth*4*row)+channel]*-1) + (temp[(col*4)+(imageWidth*4*row)+channel]*5) + (temp[((col+1)*4)+(imageWidth*4*row)+channel]*-1);
-  var channelBelow  = (temp[((col-1)*4)+(imageWidth*4*(row+1))+channel]*0) + (temp[(col*4)+(imageWidth*4*(row+1))+channel]*-1) + (temp[((col+1)*4)+(imageWidth*4*(row+1))+channel]*0);
+    var channelTop    = (temp[((col-1)*4)+(imageWidth*4*(row-1))+channel]*0) + (temp[(col*4)+(imageWidth*4*(row-1))+channel]*-1) + (temp[((col+1)*4)+(imageWidth*4*(row-1))+channel]*0);
+    var channelMiddle = (temp[((col-1)*4)+(imageWidth*4*row)+channel]*-1) + (temp[(col*4)+(imageWidth*4*row)+channel]*5) + (temp[((col+1)*4)+(imageWidth*4*row)+channel]*-1);
+    var channelBelow  = (temp[((col-1)*4)+(imageWidth*4*(row+1))+channel]*0) + (temp[(col*4)+(imageWidth*4*(row+1))+channel]*-1) + (temp[((col+1)*4)+(imageWidth*4*(row+1))+channel]*0);
 
-  var channelTotal = channelMiddle+channelBelow+channelTop;
+    var channelTotal = channelMiddle+channelBelow+channelTop;
 
-  return channelTotal;
+    return channelTotal;
 }
 
 
 function applyFilter(filterSize,filter){
 
-    
+
     var myFrame =canvasctx.getImageData(0,0,480,360); //obtem os pixels do frame escolhido
     var frameData= myFrame.data;                      //obtem os dados do frame
     var temp = []; //copia da imagem
 
     for (var i = 0; i < imageWidth*imageHeight*4; i += 4) {
-         temp[i] =   frameData[i]; //red i
-         temp[i+1] = frameData[i+1]; //green i+1
-         temp[i+2] = frameData[i+2]; //blue i+2
-         temp[i+3] = frameData[i+3]; //alpha i+3
+        temp[i] =   frameData[i]; //red i
+        temp[i+1] = frameData[i+1]; //green i+1
+        temp[i+2] = frameData[i+2]; //blue i+2
+        temp[i+3] = frameData[i+3]; //alpha i+3
 
-        }
+    }
     for (var r = 1; r < (imageHeight-1); r++) //percorre as linhas da imagem, excluí primeira e última linhas que precisariam de tratamento diferenciado
     {
         for(var c = 1; c < (imageWidth-1); c++) //percorre a coluna de cada linha da imagem, excluí primeira e última colunas que precisariam de tratamento diferenciado
@@ -214,10 +243,101 @@ function applyFilter(filterSize,filter){
         }
     }
 
- canvasctx.putImageData(myFrame, 0, 0);
- //requestAnimationFrame(copyGrayVideo); //para fazer atualizacoes segundo frame rate
+    canvasctx.putImageData(myFrame, 0, 0);
+    //requestAnimationFrame(copyGrayVideo); //para fazer atualizacoes segundo frame rate
+}
+
+var temp = []; // imagem temporaria inicializada a preta
+var framePrevious = 0;
+var countframePrevious = 0;
+
+for (var i = 0; i < 480*360*4; i +=4)
+{
+    temp[i] = 0; // red i
+    temp[i+1] = 0; // green i+1
+    temp[i+2] = 0; // blue i+2
+    temp[i+3] = 255; // alpha i+3
+
 }
 
 
+function black_white(){
+    copyPlayer1(1)
 
-    
+}
+
+function addObect(){
+    canvasctx.fillStyle="rgba("+r.value+","+g.value+","+b.value+", 0.6)"
+
+}
+
+
+function color(){
+    canvasctx.fillStyle="rgba("+r.value+","+g.value+","+b.value+", 0.6)"
+    canvasctx.fillRect(0,0,480,360);
+}
+
+function copyPlayer1(type) {
+    ctx.drawImage(myVideo,0,0,480,360);
+    var tdate = document.getElementById('txtDate');
+
+    var myFrame = canvasctx.getImageData(0, 0, 480, 360 ); // obtem os pixels do frame escolhido
+    var frameData = myFrame.data;
+    var movementFrame = 0;
+
+    for (var i = 0; i < frameData.length; i += 4)
+    {
+        var r = frameData[i];
+        var g = frameData[i+1];
+        var b = frameData[i+2];
+
+
+        // diferenca de 1 frame com o anterior, valores sempre positivos
+        frameData[i] = Math.abs(frameData[i]- temp[i]);
+        frameData[i+1] = Math.abs(frameData[i+1]- temp[i+1]);
+        frameData[i+2] = Math.abs(frameData[i+2]- temp[i+2]);
+
+
+
+        movementFrame += frameData[i]+ frameData[i+1] +frameData[i+2];
+        var auxmovementFrame = frameData[i]+ frameData[i+1] +frameData[i+2];
+
+
+        if(type==1) {
+            if (auxmovementFrame < 80) {
+
+                frameData[i] = 0;
+                frameData[i + 1] = 0;
+                frameData[i + 2] = 0;
+
+
+            } else {
+                frameData[i] = 255;
+                frameData[i + 1] = 255;
+                frameData[i + 2] = 255;
+
+            }
+        }
+
+        // guarda o frame para o proximo ciclo
+        temp[i] = r;
+        temp[i+1] = g;
+        temp[i+2] = b;
+    }
+   // tdate.value = Math.abs(movementFrame - framePrevious);
+    if((Math.abs(movementFrame - framePrevious))>10000000)
+    {
+        tdate.value = myVideo.currentTime;
+
+        copyFrame();
+    }
+    framePrevious = movementFrame;
+    if(type==1) {
+        canvasctx.putImageData(myFrame, 0, 0);
+    }
+    //requestAnimationFrame(copyPlayer1(0)); //para fazer atualizacoes segundo frame rate
+
+    ctx.putImageData(myFrame,0 , 0);
+
+
+}

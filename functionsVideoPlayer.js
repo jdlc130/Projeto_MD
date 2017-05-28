@@ -6,6 +6,7 @@ var divHide = document.getElementById('parent_div_1');
 function playPause() {
     if (myVideo.paused){
         myVideo.play();
+
     }
     else
         myVideo.pause();

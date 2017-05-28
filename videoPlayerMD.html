@@ -24,7 +24,7 @@
         <button onclick="makeBig()">Big</button>
         <button onclick="makeSmall()">Small</button>
         <button onclick="makeNormal()">Normal</button>
-
+        <input id="txtDate" type="text" name="fname">
 
     </div>
        <p id="time"></p>
@@ -52,6 +52,12 @@
             <output for="b" id="b_out">0</output>
         </fieldset>
 
+        <fieldset>
+            <label for="percentage">Percentage</label>
+            <input type="range" min="0" max="100" id="percentage" step="1" value="0">
+            <output for="percentage" id="percentage_out">0</output>
+        </fieldset>
+
         <div class="color" id="color"></div>
 
         <output id="hex">#000000</output>
@@ -69,6 +75,9 @@
         <button id="blur"      value="blur">Blur</button>
         <button id="sobel"     value="sobel"> Sobel </button>
         <button id="edges"     value="edge">Edges</button>
+        <button id="black"     value="black">Black</button>
+        <button id="colorButton"     value="colorButton">Color</button>
+        <button id="addObect"     value="addObect">AddObect</button>
         </div>
 
     </div>
@@ -79,14 +88,15 @@
         </canvas>
     </div>
 </div>
+<script src="functionsVideoPlayer.js"></script>
+<script src="functJorge.js"></script>
+<script src="functLeonel.js"></script>
+<script src="funtionsFramesVideo.js"></script>
 <footer class="footer">
     <p> Trabalho de Multimedia, Jorge e Leonel </p>
 </footer>
 </body>
 
-<script src="functionsVideoPlayer.js"></script>
-<script src="functJorge.js"></script>
-<script src="functLeonel.js"></script> 
-<script src="funtionsFramesVideo.js"></script>
+
 
 </html>

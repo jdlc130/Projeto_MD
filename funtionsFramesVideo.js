@@ -22,6 +22,14 @@ var canPlay = false;
 var setInt;
 
 var activeFilter ='default'; //definir qual o filtro
+var filterSize = 3; //tamanho do filtro 3x3
+var filterSharp = [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]; //filtro  Shar 
+var filterBlur = [[1/9,1/9,1/9],[1/9,1/9,1/9],[1/9,1/9,1/9]]; //filtro  blur 
+var filterSobel =  [[1,2,1],[0,0,0],[-1,-2,-1]];  //filtro Sobel 
+var filterSobel2 =  [[1,0,-1],[2,0,-2],[1,0,-1]]; 
+var filterEdge =  [[0,1,0],[1,-4,1],[0,1,0]];   //filtro das bordas
+
+
 
 document.getElementById('filters').addEventListener('click', function(e) //selecionar controles dos filtros
 { 
@@ -58,7 +66,6 @@ myVideo.ontimeupdate = function() {
     }
 };
 
-
 //canvas deteta eventos quando o rato é presionado. Consoante o frame escolhido pelo utilizador, coloca o vídeo na posição frameDataoral correspondente.
 c.addEventListener('mousedown', function(event) {
     var x = event.clientX; //obtém a coordenada x relativamente à margem do documento.
@@ -80,7 +87,7 @@ myVideo.addEventListener('play', function ()    //sempre que o video se encontra
         if (!$this.paused && !$this.ended) {        
             canvasctx.drawImage(myVideo, 0, 0,480,360);
             setTimeout(loop, 1000 / 30); // drawing at 30fps
-            switch(activeFilter)
+            switch(activeFilter)                                       
             {
                 case 'grayScale':
                 grayScale();
@@ -89,9 +96,22 @@ myVideo.addEventListener('play', function ()    //sempre que o video se encontra
                 noise();
                 break;
                 case 'sharpen':
-                sharpen();
+                applyFilter(filterSize,filterSharp);
                 break;
-
+                case 'blur':
+                applyFilter(filterSize,filterBlur);
+                break;
+                case 'edge':
+                grayScale();
+                applyFilter(filterSize,filterEdge);
+                break;
+                case 'sobel':
+                grayScale();
+                applyFilter(filterSize.filterSobel2);
+                applyFilter(filterSize.filterSobel);
+                break;
+                default:
+                break;
 
             }
         }
@@ -142,17 +162,13 @@ canvasctx.putImageData(myFrame,0,0);
 
 
  //aplica o filtro num canal em particular
-function applyFilterbyChannel(col,row,channel,temp)
-{
+function applyFilterbyChannel(col,row,channel,temp,filterSize,filter){
 
-  var filterSize = 3; //tamanho do filtro 3x3
-  var filter = [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]; //filtro    
+
+  
   var channelTotal = 0; //acumulador das somas
   var coltrans = col-1; //inicia o ciclo na coluna da esq. da matrix 3x3
   var rowtrans = row-1; //inicio o ciclio na linha de topo da matrix 3x3
-
-
-
 
   for (var r = 0; r < filterSize; r++)
     {
@@ -173,34 +189,35 @@ function applyFilterbyChannel(col,row,channel,temp)
 }
 
 
-function sharpen(){
+function applyFilter(filterSize,filter){
 
+    
     var myFrame =canvasctx.getImageData(0,0,480,360); //obtem os pixels do frame escolhido
     var frameData= myFrame.data;                      //obtem os dados do frame
     var temp = []; //copia da imagem
 
     for (var i = 0; i < imageWidth*imageHeight*4; i += 4) {
-         var avg=(frameData[i]+frameData[i+1]+frameData[i+2])/3;
          temp[i] =   frameData[i]; //red i
          temp[i+1] = frameData[i+1]; //green i+1
          temp[i+2] = frameData[i+2]; //blue i+2
          temp[i+3] = frameData[i+3]; //alpha i+3
 
         }
-
     for (var r = 1; r < (imageHeight-1); r++) //percorre as linhas da imagem, excluí primeira e última linhas que precisariam de tratamento diferenciado
     {
         for(var c = 1; c < (imageWidth-1); c++) //percorre a coluna de cada linha da imagem, excluí primeira e última colunas que precisariam de tratamento diferenciado
         {
             for(var w = 0; w < 3; w++) //percorre 3 canais: r,g,b (alpha é excluído)
             {
-                frameData[(c*4)+(imageWidth*4*r)+w] = applyFilterbyChannel(c,r,w,temp);
+                frameData[(c*4)+(imageWidth*4*r)+w] = applyFilterbyChannel(c,r,w,temp,filterSize,filter);
             }
         }
     }
 
  canvasctx.putImageData(myFrame, 0, 0);
  //requestAnimationFrame(copyGrayVideo); //para fazer atualizacoes segundo frame rate
-
-
 }
+
+
+
+    

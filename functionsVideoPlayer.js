@@ -12,13 +12,14 @@ function playPause() {
 }
 
 function makeBig() {
-    myVideo.width = 560;
+    canvas.width = 560;
 }
 
 function makeSmall() {
-    myVideo.width = 320;
+    canvas.height = 300;
 }
 
 function makeNormal() {
-    myVideo.width = 420;
+    canvas.width = 480;
+    canvas.height= 360;
 } 

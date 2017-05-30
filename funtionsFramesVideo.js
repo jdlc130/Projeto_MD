@@ -7,7 +7,7 @@ var canvasctx= canvas.getContext('2d');
 var divHide = document.getElementById('parent_div_1');
 
 var c = document.getElementById("frame");
-var n =30;  //divide o vídeo em 5 segmentos de igual diuração
+var n =20;  //divide o vídeo em 5 segmentos de igual diuração
 c.width = (myVideo.width+10)*30; //dimensões do canvas tem includir 5 frames com metade das dimensões do vídeo
 c.height = myVideo.height/2;
 
@@ -15,7 +15,7 @@ var interval = 0; //duração dos clips
 
 var ctx = c.getContext("2d");
 
-var i = 0; //controlo do número de frame a obter < n
+var aux_i = 0; //controlo do número de frame a obter < n
 
 var number = 0;
 
@@ -33,6 +33,21 @@ var filterEdge =  [[0,1,0],[1,-4,1],[0,1,0]];   //filtro das bordas
 
 var time = [];
 
+var temp = []; // imagem temporaria inicializada a preta
+var framePrevious = 0;
+var countframePrevious = 0;
+
+for (var i = 0; i < canvas.width*canvas.height*4; i +=4)
+{
+    temp[i] = 0; // red i
+    temp[i+1] = 0; // green i+1
+    temp[i+2] = 0; // blue i+2
+    temp[i+3] = 255; // alpha i+3
+
+}
+
+var imageWidth=canvas.width;
+var imageHeight=canvas.height;
 
 document.getElementById('filters').addEventListener('click', function(e) //selecionar controles dos filtros
 {
@@ -43,38 +58,54 @@ document.getElementById('filters').addEventListener('click', function(e) //selec
 //assim que o vídeo fôr carregado, calcula o intervalo e obtém os frames
 myVideo.oncanplay = function() {
     divHide.style.display='none';
-    interval = Math.round(myVideo.duration);
+
+    canvasctx.drawImage(myVideo,0,0,canvas.width,canvas.height);
+
+
+  /*  interval = Math.round(myVideo.duration/n);
+    if(!canPlay)
+    {aux_i = 0;
+        setInt = setInterval(seekVideo, 100);  //chama seekvideo pretendida a cada 100ms
+        canPlay = true; //be bure that setInterval is called only once
+    }*/
+};
+
+function testtt() {
+    interval = Math.round(myVideo.duration/n);
     if(!canPlay)
     {
+        aux_i = 0;
         setInt = setInterval(seekVideo, 100);  //chama seekvideo pretendida a cada 100ms
         canPlay = true; //be bure that setInterval is called only once
     }
-};
-
+}
 
 //coloca o vídeo na posição frameDataoral pretendida, se i >= n para
 function seekVideo(){
-    if(i < n)
-        myVideo.currentTime = interval*i;
-    else
+    if(aux_i < n) {
+        myVideo.currentTime = interval * aux_i;
+    }
+    else {
+        myVideo.currentTime = 0;
         clearInterval(setInt);
+    }
 }
 
 //cada vez que existe alteracao frameDataoral desenha um frame no canvas, caso i >= n para
 myVideo.ontimeupdate = function() {
-    copyPlayer1(0);
-    if(i < n)
-    {
 
-        // ctx.drawImage(myVideo,((320+10)*(i)),0,320,180);
-        i++;
+    if(aux_i < n)
+    {
+        copyFrame(0);
+        aux_i++;
     }
 
 };
 
 
 function copyFrame() {
-    number++;
+
+        number++;
         time[number] = myVideo.currentTime;
         ctx.drawImage(myVideo,((320+10)*(number)),0,320,180);
 
@@ -104,7 +135,7 @@ myVideo.addEventListener('play', function ()    //sempre que o video se encontra
     var $this = this; //cache
     (function loop() {
         if (!$this.paused && !$this.ended) {
-            canvasctx.drawImage(myVideo, 0, 0,480,360);
+            canvasctx.drawImage(myVideo, 0, 0,canvas.width,canvas.height);
             setTimeout(loop, 1000 / 30); // drawing at 30fps
             switch(activeFilter)
             {
@@ -151,7 +182,7 @@ myVideo.addEventListener('play', function ()    //sempre que o video se encontra
 
 function grayScale()        //filtro cinza
 {
-    var myFrame =canvasctx.getImageData(0,0,480,360); //obtem os pixels do frame escolhido
+    var myFrame =canvasctx.getImageData(0,0,canvas.width,canvas.height); //obtem os pixels do frame escolhido
     var frameData= myFrame.data;
     for(var i=0; i<frameData.length; i+=4)
     {
@@ -166,7 +197,7 @@ function grayScale()        //filtro cinza
 
 function noise()
 {
-    var myFrame =canvasctx.getImageData(0,0,480,360); //obtem os pixels do frame escolhido
+    var myFrame =canvasctx.getImageData(0,0,canvas.width,canvas.height); //obtem os pixels do frame escolhido
     var frameData= myFrame.data;
 
     for(var i=0; i<frameData.length; i+=4)
@@ -186,8 +217,7 @@ function noise()
     canvasctx.putImageData(myFrame,0,0);
 }
 
-var imageWidth=480;
-var imageHeight=360;
+
 
 
 //aplica o filtro num canal em particular
@@ -221,7 +251,7 @@ function applyFilterbyChannel(col,row,channel,temp,filterSize,filter){
 function applyFilter(filterSize,filter){
 
 
-    var myFrame =canvasctx.getImageData(0,0,480,360); //obtem os pixels do frame escolhido
+    var myFrame =canvasctx.getImageData(0,0,canvas.width,canvas.height); //obtem os pixels do frame escolhido
     var frameData= myFrame.data;                      //obtem os dados do frame
     var temp = []; //copia da imagem
 
@@ -247,18 +277,6 @@ function applyFilter(filterSize,filter){
     //requestAnimationFrame(copyGrayVideo); //para fazer atualizacoes segundo frame rate
 }
 
-var temp = []; // imagem temporaria inicializada a preta
-var framePrevious = 0;
-var countframePrevious = 0;
-
-for (var i = 0; i < 480*360*4; i +=4)
-{
-    temp[i] = 0; // red i
-    temp[i+1] = 0; // green i+1
-    temp[i+2] = 0; // blue i+2
-    temp[i+3] = 255; // alpha i+3
-
-}
 
 
 function black_white(){
@@ -274,14 +292,14 @@ function addObect(){
 
 function color(){
     canvasctx.fillStyle="rgba("+r.value+","+g.value+","+b.value+", 0.6)"
-    canvasctx.fillRect(0,0,480,360);
+    canvasctx.fillRect(0,0,canvas.width,canvas.height);
 }
 
 function copyPlayer1(type) {
-    ctx.drawImage(myVideo,0,0,480,360);
+    ctx.drawImage(myVideo,0,0,canvas.width,canvas.height);
     var tdate = document.getElementById('txtDate');
 
-    var myFrame = canvasctx.getImageData(0, 0, 480, 360 ); // obtem os pixels do frame escolhido
+    var myFrame = canvasctx.getImageData(0, 0, canvas.width, canvas.height ); // obtem os pixels do frame escolhido
     var frameData = myFrame.data;
     var movementFrame = 0;
 
@@ -327,17 +345,18 @@ function copyPlayer1(type) {
    // tdate.value = Math.abs(movementFrame - framePrevious);
     if((Math.abs(movementFrame - framePrevious))>10000000)
     {
-        tdate.value = myVideo.currentTime;
+        //tdate.value = myVideo.currentTime;
 
         copyFrame();
     }
     framePrevious = movementFrame;
     if(type==1) {
         canvasctx.putImageData(myFrame, 0, 0);
-    }
-    //requestAnimationFrame(copyPlayer1(0)); //para fazer atualizacoes segundo frame rate
 
+    }
     ctx.putImageData(myFrame,0 , 0);
 
 
 }
+
+

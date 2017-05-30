@@ -5,6 +5,7 @@ var divHide = document.getElementById('parent_div_1');
 
 function playPause() {
     if (myVideo.paused){
+
         myVideo.play();
 
     }
@@ -17,10 +18,16 @@ function makeBig() {
 }
 
 function makeSmall() {
-    canvas.height = 300;
+    canvas.height = canvas.width/2 ;
+    canvas.width = canvas.width/2 ;
 }
 
 function makeNormal() {
     canvas.width = 480;
     canvas.height= 360;
-} 
+}
+
+function makeLengthTy() {
+    canvas.height = 300;
+    canvas.width = 370;
+}

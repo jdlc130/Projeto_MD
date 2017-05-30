@@ -2,37 +2,56 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="navigationBar.css">
 </head>
-<header> <h1> Multimedia Reader  </h1> </header>
+<br>
+
 
 <body>
 <div class="content">
+<div class="topnav">
+    <a onclick="changeButton('imporFile');">Import Video</a>
+    <a onclick="changeButton('WheneverRelevantMoments');">Whenever relevant moments</a>
+    <a onclick="changeButton('filters');">Filters</a>
+    <a onclick="changeButton('masks');">Masks</a>
+    <a href="#about">Edit</a>
+</div>
+
+<br>
+    <br>
+
     <div id="parent_div_1">
 
-    
+
         <video id="video1" width="480" height="360" controls>
-                    <source src="movie.mp4" type="video/mp4" c>
-                    <br>
+            <source src="movie2.mp4" type="video/mp4" />
+            <br>
         </video>
-        </div>
+    </div>
 
     <div id="parent_div_2">
-        <canvas id="myCanvas" width="480" height="360">
 
-        </canvas>
-         <button onclick="playPause()">Play/Pause</button>
+        <canvas id="myCanvas" width="480" height="360"
+                style="position: absolute;  z-index: 0;"></canvas>
+        <canvas id="layer2" width="520" height="360"
+                style="position: absolute;  z-index: 1;"></canvas>
+
+
+        <div class="child_div_2">
+        <button onclick="playPause()" >Play/Pause</button>
         <button onclick="makeBig()">Big</button>
         <button onclick="makeSmall()">Small</button>
         <button onclick="makeNormal()">Normal</button>
-        <input id="txtDate" type="text" name="fname">
-
+        </div>
     </div>
-       <p id="time"></p>
-      
 
-   
 
-    <div class="child_div_1">
+    <p id="time"></p>
+
+
+
+
+    <div class="child_div_1" id="selectColor">
         <p> Menu Controlls</p>
 
         <fieldset>
@@ -58,40 +77,59 @@
             <output for="percentage" id="percentage_out">0</output>
         </fieldset>
 
-        <div class="color" id="color"></div>
 
-        <output id="hex">#000000</output>
 
+
+        <button id="addObect"    onclick="testtt();">AddObect</button>
 
     </div>
 
-     <div class="child_div_1">
+    <div class="child_div_1" id="imporFile">
+    <input id="file" type='file' onchange="readURL(this);" />
+    </div>
+
+     <div class="child_div_1" >
         <div id="filters">
-        <p> Filters</p>
-        <br>
-        <button id="grayScale" value="grayScale">GrayScale</button>
-        <button id="noise"     value="noise"> Noise </button>
-        <button id="Sharpen"   value="sharpen">Sharpen</button>
-        <button id="blur"      value="blur">Blur</button>
-        <button id="sobel"     value="sobel"> Sobel </button>
-        <button id="edges"     value="edge">Edges</button>
-        <button id="black"     value="black">Black</button>
-        <button id="colorButton"     value="colorButton">Color</button>
-        <button id="addObect"     value="addObect">AddObect</button>
+
+        <button id="grayScale" value="grayScale"><br><img  width="200" height="200" src="filterGrayScale.png"><br>Gray</button>
+        <button id="noise"     value="noise"><br><img  width="200" height="200" src="filterNoise.png"><br>Noise</button>
+        <button id="Sharpen"   value="sharpen"><br><img  width="200" height="200" src="filterSharpen.png"><br>Sharpen</button>
+        <button id="blur"      value="blur"><br><img  width="200" height="200" src="filterSharpen.png"><br>Blur</button><br>
+        <button id="sobel"     value="sobel"><br><img  width="200" height="200" src="filterSharpen.png"><br>Sobel</button>
+        <button id="edges"     value="edge"><br><img  width="200" height="200" src="filterEdge.png"><br>Edges</button>
+        <button id="black"     value="black"><br><img  width="200" height="200" src="filterBlack.png"><br>Black White</button>
+        <button id="colorButton"     value="colorButton"><br> <canvas class="canvasColor" id="canvasColor" width="200" height="200">
+       <img  width="200" height="210" src="filterSharpen.png"> </canvas><br>Color</button>
+
+
         </div>
 
     </div>
 
+    <div id="mask">
+    <div class="child_div_1" >
+
+
+            <button id="mask1" onclick="mask1();"><br><img  width="200" height="200" src="maskTv.png"><br>Tv mask</button>
+            <button id="mask2" onclick="mask2();"><br><img  width="200" height="200" src="mask2.png"><br>Frame mask </button>
+
+
+
+    </div>
+    </div>
 
     <div class="frame_control" >
         <canvas id="frame" >
         </canvas>
     </div>
 </div>
-<script src="functionsVideoPlayer.js"></script>
+<script src="functionsVideoPlayer.js">
+    </script>
 <script src="functJorge.js"></script>
 <script src="functLeonel.js"></script>
 <script src="funtionsFramesVideo.js"></script>
+<script src="navigationBar.js"> </script>
+<script > window.onload = changeButton('imporFile');</script>
 <footer class="footer">
     <p> Trabalho de Multimedia, Jorge e Leonel </p>
 </footer>

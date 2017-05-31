@@ -14,7 +14,7 @@
     <a onclick="changeButton('WheneverRelevantMoments');">Whenever relevant moments</a>
     <a onclick="changeButton('filters');">Filters</a>
     <a onclick="changeButton('masks');">Masks</a>
-    <a href="#about">Edit</a>
+
 </div>
 
 <br>
@@ -42,7 +42,11 @@
         <button onclick="makeBig()">Big</button>
         <button onclick="makeSmall()">Small</button>
         <button onclick="makeNormal()">Normal</button>
+
         </div>
+
+        <canvas id="sideFrame"  width="350" height="30"></canvas>
+
     </div>
 
 
@@ -79,8 +83,17 @@
 
 
 
+        <div id="moments">
+        <div class="color" id="color"></div>
 
-        <button id="addObect"    onclick="testtt();">AddObect</button>
+        <button id="addObect"    onclick="typeMovement('movementFrame');">Relevant Moments</button>
+        <button id="colorRelevantMoments"    onclick="typeMovement('movementFrameColor');">Color Relevant Moments</button>
+        <button id="relevantMomentsSabel"    onclick="typeMovement('movementFrameSabel');">Relevant Moments Sabel</button>
+        <button    onclick="typeMovement('movementFrameSabelHorizontal');">Relevant Moments Sabel Horizontal</button>
+        <button    onclick="typeMovement('movementFrameSabelVertical');">Relevant Moments Sabel Vertical</button>
+        <button    onclick="typeMovement('movementFrameEmboss');">Relevant Moments Emboss</button>
+        </div>
+        <p id="txtDate"></p>
 
     </div>
 
@@ -94,11 +107,15 @@
         <button id="grayScale" value="grayScale"><br><img  width="200" height="200" src="filterGrayScale.png"><br>Gray</button>
         <button id="noise"     value="noise"><br><img  width="200" height="200" src="filterNoise.png"><br>Noise</button>
         <button id="Sharpen"   value="sharpen"><br><img  width="200" height="200" src="filterSharpen.png"><br>Sharpen</button>
-        <button id="blur"      value="blur"><br><img  width="200" height="200" src="filterSharpen.png"><br>Blur</button><br>
+        <button id="blur"      value="blur"><br><img  width="200" height="200" src="filterSharpen.png"><br>Blur</button>
         <button id="sobel"     value="sobel"><br><img  width="200" height="200" src="filterSharpen.png"><br>Sobel</button>
-        <button id="edges"     value="edge"><br><img  width="200" height="200" src="filterEdge.png"><br>Edges</button>
+        <button id="edges"     value="edge"><br><img  width="200" height="200" src="filterEdge.png"><br>Edges</button><br>
+        <button id="emboss"     value="emboss"><br><img  width="200" height="200" src="filterEdge.png"><br>Emboss</button>
+        <button id="movementEmboss"     value="movementEmboss"><br><img  width="200" height="200" src="movementEmboss.png"><br>Movement Emboss</button>
+        <button id="movementSabel"     value="movementSabel"><br><img  width="200" height="200" src="movementSabel.png"><br>Movement Sabel</button>
         <button id="black"     value="black"><br><img  width="200" height="200" src="filterBlack.png"><br>Black White</button>
         <button id="colorButton"     value="colorButton"><br> <canvas class="canvasColor" id="canvasColor" width="200" height="200">
+
        <img  width="200" height="210" src="filterSharpen.png"> </canvas><br>Color</button>
 
 
@@ -129,7 +146,10 @@
 <script src="functLeonel.js"></script>
 <script src="funtionsFramesVideo.js"></script>
 <script src="navigationBar.js"> </script>
-<script > window.onload = changeButton('imporFile');</script>
+<script src="relevantMoments.js"> </script>
+<script src="slideFrame.js"> </script>
+<script > window.onload = changeButton('imporFile');
+updateColor();</script>
 <footer class="footer">
     <p> Trabalho de Multimedia, Jorge e Leonel </p>
 </footer>

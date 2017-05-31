@@ -7,6 +7,7 @@ var body = document.body,
     r_out = document.querySelector('#r_out'),
     g_out = document.querySelector('#g_out'),
     b_out = document.querySelector('#b_out'),
+    color_out = document.getElementById('color'),
     percentage_out = document.querySelector('#percentage_out');
 
     var canvasColor = document.getElementById("canvasColor");
@@ -20,6 +21,7 @@ function setColor(){
         g_hex = parseInt(g.value, 10).toString(16),
         b_hex = parseInt(b.value, 10).toString(16),
         hex = "#" + pad(r_hex) + pad(g_hex) + pad(b_hex);
+        color_out.style.backgroundColor = hex;
 
 
 
@@ -122,4 +124,12 @@ function mask2(){
         makeNormal();
         canvas2ctx.clearRect(0, 0, canvas2.width, canvas2.height);
     }
+}
+
+function updateColor(){
+    r_out.value = r.value;
+    g_out.value = g.value;
+    b_out.value = b.value;
+    percentage_out.value = percentage.value;
+    setColor();
 }

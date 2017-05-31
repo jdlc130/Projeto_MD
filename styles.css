@@ -70,7 +70,7 @@ body{
 
 #parent_div_2 {
     width: 500px;
-    height: 420px;
+    height: 470px;
     border: 1px solid red;
     margin-right: 10px;
     margin-left: 10px;
@@ -80,7 +80,7 @@ body{
 
  #parent_div_1, #parent_div_3 {
     width: 590px;
-    height: 400px;
+    height: 500px;
     border: 1px solid red;
     margin-right: 10px;
     margin-left: 10px;
@@ -144,4 +144,8 @@ body {
 
 a:active {
     background-color: yellow;
+}
+
+div.sideFrame{
+
 }

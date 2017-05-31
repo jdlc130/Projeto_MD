@@ -5,7 +5,6 @@ var divHide = document.getElementById('parent_div_1');
 
 function playPause() {
     if (myVideo.paused){
-
         myVideo.play();
 
     }
@@ -29,5 +28,5 @@ function makeNormal() {
 
 function makeLengthTy() {
     canvas.height = 300;
-    canvas.width = 370;
+    canvas.width = 400;
 }

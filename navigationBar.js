@@ -1,7 +1,7 @@
 /**
  * Created by jorgeduarte on 29/05/17.
  */
-function changeButton(type){
+function changeButton(evt, type){
 
     var selectColor = document.getElementById('selectColor');
     var filters = document.getElementById('filters');
@@ -9,7 +9,12 @@ function changeButton(type){
     var imporFile = document.getElementById('imporFile');
     var masks = document.getElementById('mask');
     var moments = document.getElementById('moments');
+    var tablinks = document.getElementsByClassName('bar');
 
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    evt.currentTarget.className += " active";
 
     switch(type)
     {
@@ -19,6 +24,9 @@ function changeButton(type){
             imporFile.style.display = 'none';
             masks.style.display = 'none';
             moments.style.display = 'block';
+
+
+
             labelTitle.innerHTML = "Change the relevant color"
 
             break;
@@ -49,4 +57,10 @@ function changeButton(type){
 }
 
 
+var selector = '.nav li';
+
+$(selector).on('click', function(){
+    $(selector).removeClass('active');
+    $(this).addClass('active');
+});
 

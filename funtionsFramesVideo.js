@@ -13,7 +13,7 @@ c.height = myVideo.height/2;
 
 var interval = 0; //duração dos clips
 
-var ctx = c.getContext("2d");
+var ctx = c.getContext("2d");//contexto do canvas de momentos relevantes
 
 var aux_i = 0; //controlo do número de frame a obter < n
 
@@ -25,24 +25,22 @@ var setInt;
 
 var activeFilter ='default'; //definir qual o filtro
 var filterSize = 3; //tamanho do filtro 3x3
-var filterSharp = [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]; //filtro  Shar
-var filterBlur = [[1/9,1/9,1/9],[1/9,1/9,1/9],[1/9,1/9,1/9]]; //filtro  blur
-var filterSobel =  [[1,2,1],[0,0,0],[-1,-2,-1]];  //filtro Sobel
-var filterSobel2 =  [[1,0,-1],[2,0,-2],[1,0,-1]];
-var filterEdge =  [[0,1,0],[1,-4,1],[0,1,0]];   //filtro das bordas
+var filterSharp = [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]; //filtro  Sharpened 
+var filterBlur =  //filtro  blur
+var filterEdge =  [[0,1,0],[1,-4,1],[0,1,0]];   //filtro edge Detection
 var emboss =  [[-2,-1,0],[-1,1,-1],[0,1,2]];   //filtro das bordas
 var sobel2 =  [[1,1,1],[1,0.7,-1],[-1,-1,-1]];   //filtro das bordas
 var outline =  [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]];   //filtro das bordas
 var topSobel =  [[1,2,1],[0,0,0],[-1,-2,-1]];   //filtro das bordas
-var verticalSobel =  [[-1,0,1],[-2,0,2],[-1,0,1]];   //filtro das bordas
-var horizontalSobel =  [[-1,-2,-1],[0,0,0],[1,2,1]];   //filtro das bordas
+var verticalSobel =  [[-1,0,1],[-2,0,2],[-1,0,1]];   //filtro detecta as linhas Verticias
+var horizontalSobel =  [[-1,-2,-1],[0,0,0],[1,2,1]];   //filtro detecta as linhas horizontais
 var identity =  [[-1,-2,-1],[0,0,0],[1,2,1]];   //filtro das bordas
 var coutum =  [[0,-3,0],[-2.1,5,-1],[-1.9,0.8,1.6]];   //filtro das bordas
 
 var time = [];
 
 var temp = []; // imagem temporaria inicializada a preta
-var framePrevious = 0;
+var framePrevious = 0; //Frame anterior
 
 
 for (var i = 0; i < canvas.width*canvas.height*4; i +=4)
@@ -57,6 +55,7 @@ for (var i = 0; i < canvas.width*canvas.height*4; i +=4)
 var imageWidth=canvas.width;
 var imageHeight=canvas.height;
 
+//Event listener para adição dos Filtros
 document.getElementById('filters').addEventListener('click', function(e) //selecionar controles dos filtros
 {
     var value = e.target.value;
@@ -69,7 +68,6 @@ myVideo.oncanplay = function() {
 
     canvasctx.drawImage(myVideo,0,0,canvas.width,canvas.height);
 
-
   /*  interval = Math.round(myVideo.duration/n);
     if(!canPlay)
     {aux_i = 0;
@@ -81,7 +79,9 @@ myVideo.oncanplay = function() {
 
 
 
-myVideo.addEventListener('play', function ()    //sempre que o video se encontra a ser reproduzido
+//Sempre que o video é reproduzido podem ser aplicados filtros sobre o mesmo dependo de qual filtro 
+//Foi selecionado
+myVideo.addEventListener('play', function ()    
 {
     var $this = this; //cache
     (function loop() {
@@ -90,10 +90,10 @@ myVideo.addEventListener('play', function ()    //sempre que o video se encontra
             setTimeout(loop, 1000 / 30); // drawing at 30fps
             switch(activeFilter)
             {
-                case 'grayScale':
+                case 'grayScale': 
                     grayScale();
                     break;
-                case 'noise':
+                case 'noise':    
                     noise();
                     break;
                 case 'sharpen':
@@ -108,8 +108,8 @@ myVideo.addEventListener('play', function ()    //sempre que o video se encontra
                     break;
                 case 'sobel':
                     grayScale();
-                    applyFilter(filterSize,filterSobel2);
-                    applyFilter(filterSize,filterSobel);
+                    applyFilter(filterSize,horizontalSobel);
+                    applyFilter(filterSize,verticalSobel);
                     break;
                 case 'black':
                     black_white();
@@ -120,7 +120,7 @@ myVideo.addEventListener('play', function ()    //sempre que o video se encontra
                 case 'emboss':
                     applyFilter(filterSize,emboss);
 
-                    break;
+                     break;
                 case 'movementEmboss':
                     grayScale();
                     applyFilter(filterSize,emboss);
@@ -141,37 +141,40 @@ myVideo.addEventListener('play', function ()    //sempre que o video se encontra
 }, 0);
 
 
-
-function grayScale()        //filtro cinza
+//Função que aplica o efeito cinza aos videos
+function grayScale()        
 {
-    var myFrame =canvasctx.getImageData(0,0,canvas.width,canvas.height); //obtem os pixels do frame escolhido
+    var myFrame =canvasctx.getImageData(0,0,canvas.width,canvas.height); //obtem os dados da imagem
     var frameData= myFrame.data;
-    for(var i=0; i<frameData.length; i+=4)
+    for(var i=0; i<frameData.length; i+=4)//percorre o array de pixeis 
     {
-        var avg=(frameData[i]+frameData[i+1]+frameData[i+2])/3; //avg para aplicar a todos as cores
-        frameData[i] = avg;
+        var avg=(frameData[i]+frameData[i+1]+frameData[i+2])/3; //avg para aplicar aos tres canais RGB
+        frameData[i] = avg;  
         frameData[i+1] =avg;
         frameData[i+2] =avg;
     }
 
-    canvasctx.putImageData(myFrame,0,0);
+    canvasctx.putImageData(myFrame,0,0);//coloca a imagem processada no canvas
 }
 
+//Função que aplica o efeito de noise aos videos
 function noise()
 {
-    var myFrame =canvasctx.getImageData(0,0,canvas.width,canvas.height); //obtem os pixels do frame escolhido
+    var myFrame =canvasctx.getImageData(0,0,canvas.width,canvas.height); //obtem os dados da imagem
     var frameData= myFrame.data;
 
-    for(var i=0; i<frameData.length; i+=4)
+    for(var i=0; i<frameData.length; i+=4) //percorre o array de pixeis 
     {
-        var rand = (0.5 - Math.random()) * 70; //UM VALOR RANDOM
+        var rand = (0.5 - Math.random()) * 70; //gera um valor aleatorio
 
-        var r =  frameData[i];
-        var g =  frameData[i+1];
-        var b = frameData[i+2];
+        var r =  frameData[i];     //red
+        var g =  frameData[i+1];   //green
+        var b = frameData[i+2];     //blue
 
-        frameData[i] = r+ rand;
-        frameData[i+1]= g+rand;
+        //Soma o numero aleatorio ao canal de cada pixel
+
+        frameData[i] = r+ rand;     
+        frameData[i+1]= g+rand;     
         frameData[i+2]= b+rand;
 
     }
@@ -182,7 +185,7 @@ function noise()
 
 
 
-//aplica o filtro num canal em particular
+//aplica os filtros de convoluçao
 function applyFilterbyChannel(col,row,channel,temp,filterSize,filter){
 
 
@@ -199,7 +202,6 @@ function applyFilterbyChannel(col,row,channel,temp,filterSize,filter){
 
         }
     }
-
     var channelTop    = (temp[((col-1)*4)+(imageWidth*4*(row-1))+channel]*0) + (temp[(col*4)+(imageWidth*4*(row-1))+channel]*-1) + (temp[((col+1)*4)+(imageWidth*4*(row-1))+channel]*0);
     var channelMiddle = (temp[((col-1)*4)+(imageWidth*4*row)+channel]*-1) + (temp[(col*4)+(imageWidth*4*row)+channel]*5) + (temp[((col+1)*4)+(imageWidth*4*row)+channel]*-1);
     var channelBelow  = (temp[((col-1)*4)+(imageWidth*4*(row+1))+channel]*0) + (temp[(col*4)+(imageWidth*4*(row+1))+channel]*-1) + (temp[((col+1)*4)+(imageWidth*4*(row+1))+channel]*0);
@@ -209,13 +211,13 @@ function applyFilterbyChannel(col,row,channel,temp,filterSize,filter){
     return channelTotal;
 }
 
-
+//Aplica os Filtors a imagem recendo como argumento o tamanho do filtro (matriz) e a matriz do filtro
 function applyFilter(filterSize,filter){
 
 
-    var myFrame =canvasctx.getImageData(0,0,canvas.width,canvas.height); //obtem os pixels do frame escolhido
-    var frameData= myFrame.data;                      //obtem os dados do frame
-    var temp = []; //copia da imagem
+    var myFrame =canvasctx.getImageData(0,0,canvas.width,canvas.height); 
+    var frameData= myFrame.data;                      
+    var temp = []; 
 
     for (var i = 0; i < imageWidth*imageHeight*4; i += 4) {
         temp[i] =   frameData[i]; //red i
@@ -236,7 +238,7 @@ function applyFilter(filterSize,filter){
     }
 
     canvasctx.putImageData(myFrame, 0, 0);
-    //requestAnimationFrame(copyGrayVideo); //para fazer atualizacoes segundo frame rate
+    
 }
 
 

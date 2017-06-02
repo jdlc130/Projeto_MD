@@ -15,6 +15,7 @@ var body = document.body,
 
 var stateMask = false;
 
+//Aplica a cor selecionada ao canvas 
 function setColor(){
 
     var r_hex = parseInt(r.value, 10).toString(16),
@@ -77,7 +78,7 @@ percentage.addEventListener('input', function() {
     percentage_out.value = percentage.value;
 }, false);
 
-
+//Função que efectua o load dos videos
 function readURL(input) {
     if (input.files && input.files[0]) {
         var file = input.files[0];
@@ -96,6 +97,7 @@ function readURL(input) {
 var canvas2 = document.getElementById("layer2");
 var canvas2ctx= canvas2.getContext('2d');
 
+//Aplica a primeira a mascara de uma tv ao canvas
 function mask1(){
     makeLengthTy();
     if(stateMask==false) {
@@ -111,6 +113,7 @@ function mask1(){
     }
 }
 
+//Aplica a segunda mascara da frame de um quadro ao canvas
 function mask2(){
     makeLengthTy();
     if(stateMask==false) {
@@ -126,6 +129,7 @@ function mask2(){
     }
 }
 
+//Actualiza a cor mostrado ao utilizador
 function updateColor(){
     r_out.value = r.value;
     g_out.value = g.value;
